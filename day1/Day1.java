@@ -3,17 +3,24 @@ package day1;
 public class Day1 {
 
     //Learning about methods
+    //public is the access modifier which how you can access a methods throgh
+    // the program;
+    // static is optional but without static keywords you will call it by
+    // making objects using new keywords we do with Scanners and by using
+    // static you can the methods by its name.
+    // int or void etc are the return type of the methods which what
+    // this method will return on its calling.
+    //Name of the methods anythings could be but dont  use the same name of  methods.
+    // Them, there will be methods over-loading(We will study it in OOPs).
+    // Parameters or arguments that are often use interachangabily.
+    // [Parameters]-> When you pass the values on calling time then it will be
+    // parameters
+    // [Arguments] -> these parameters you accept in the function's
+    // paranthesis (arguments). Then, it will be arguments.
+    // But, it can be used inter-changabily.
 
-    //public is the access modifier which how you can access a methods throgh the program;
-    // static is optional but without static keywords you will call it by making
-    // objects using new keywords we do with Scanners.
-    //int or void etc are the return type of the methods which what this method will return on its calling.
-    //Name of the methods anythings could be but dont  use the same name of  methods. Them, there will be
-    //methods over-loading(We will study it in OOPs).
-    // Parameters or arguments that are often use interachangabily . When you pass the values on
-    // calling time then it will be parameters and thees parameters you accept in the function's paranthesis (arguments).
-    //Then, it will be arguments. But, it can be used inter-changabily.
-    public  static  int  sum(int a , int b ){
+
+    public  static  int  sum(int a , int b /*Arguments*/){
         int sum = a + b;
         return sum;
     }
@@ -22,7 +29,7 @@ public class Day1 {
     }
     public static void main(String[] args){
         print();
-        System.out.println(sum(2,3));
+        System.out.println(sum(2,3)/*Parameters*/);
     }
 }
 
