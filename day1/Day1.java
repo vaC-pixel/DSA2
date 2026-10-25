@@ -19,7 +19,10 @@ public class Day1 {
     // paranthesis (arguments). Then, it will be arguments.
     // But, it can be used inter-changabily.
 
-
+    /*The below line till the arguments is called
+    * 1. Argument signature.
+    * 2. Argument prototype.
+    * 3. Argument declaration*/
     public  static  int  sum(int a , int b /*Arguments*/){
         int sum = a + b;
         return sum;
