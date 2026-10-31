@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Core & Data Structures - Interactive Study Guide</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#111111',
+                        darkCard: '#1c1c1c',
+                        accent: '#ff792e',
+                        accentHover: '#e06118',
+                        accentGlow: 'rgba(255, 121, 46, 0.25)',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #111111;
+            color: #e5e7eb;
+            font-family: 'Inter', sans-serif;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(255, 121, 46, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 75%, rgba(255, 121, 46, 0.05) 0%, transparent 45%);
+            background-attachment: fixed;
+        }
+
+        /* Glassmorphism utility classes */
+        .glass-panel {
+            background: rgba(28, 28, 28, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .glass-panel-accent {
+            background: rgba(255, 121, 46, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 121, 46, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(255, 121, 46, 0.1);
+        }
+
+        .glass-card {
+            background: rgba(28, 28, 28, 0.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(255, 121, 46, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px -10px rgba(255, 121, 46, 0.15);
+        }
+
+        .glass-input {
+            background: rgba(17, 11, 11, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
+
+        .glass-input:focus {
+            border-color: #ff792e;
+            outline: none;
+            box-shadow: 0 0 12px rgba(255, 121, 46, 0.3);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111111;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a2a2a;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff792e;
+        }
+
+        /* Code Block Styling */
+        pre code {
+            font-family: 'Fira Code', monospace;
+        }
+
+        .keyword { color: #ff792e; font-weight: 600; }
+        .type { color: #38bdf8; }
+        .string { color: #4ade80; }
+        .comment { color: #9ca3af; font-style: italic; }
+        .number { color: #f472b6; }
+        .function { color: #facc15; }
+
+        .active-tab {
+            background: #ff792e !important;
+            color: #111111 !important;
+            font-weight: 700;
+            box-shadow: 0 0 15px rgba(255, 121, 46, 0.4);
+        }
+
+        /* Canvas visualizers animation */
+        canvas {
+            border-radius: 0.5rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-gray-200 flex flex-col">
+
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-50 glass-panel border-b border-white/10 px-4 lg:px-8 py-3">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            
+            <!-- Logo & Brand -->
+            <div class="flex items-center space-x-3 w-full md:w-auto justify-between md:justify-start">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-darkBg text-xl font-bold shadow-lg shadow-orange-500/20">
+                        <i class="fa-brands fa-java"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg tracking-wide text-white flex items-center gap-2">
+                            JAVA CORE <span class="text-xs px-2 py-0.5 rounded bg-accent/20 text-accent font-mono border border-accent/30">PART 2</span>
+                        </h1>
+                        <p class="text-xs text-gray-400">Interactive Study Guide & Visualizer</p>
+                    </div>
+                </div>
+                
+                <!-- Mobile Navigation Toggle Button -->
+                <button id="mobileMenuBtn" class="md:hidden text-gray-300 hover:text-white p-2">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Global Search Bar -->
+            <div class="relative w-full md:w-96">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                <input type="text" id="searchInput" placeholder="Search topics, concepts, code snippets..." 
+                       class="w-full glass-input rounded-xl pl-9 pr-4 py-2 text-sm transition-all duration-300">
+                <button id="clearSearch" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </button>
+            </div>
+
+            <!-- View Switchers -->
+            <div class="hidden md:flex items-center space-x-1 glass-panel p-1 rounded-xl">
+                <button onclick="switchMainView('dashboard')" id="btn-view-dashboard" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all active-tab">
+                    <i class="fa-solid fa-grid-2 mr-1.5"></i> All Notes
+                </button>
+                <button onclick="switchMainView('syllabus')" id="btn-view-syllabus" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-white transition-all">
+                    <i class="fa-solid fa-list-check mr-1.5"></i> Syllabus Outline
+                </button>
+                <button onclick="switchMainView('visualizers')" id="btn-view-visualizers" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-white transition-all">
+                    <i class="fa-solid fa-cube mr-1.5"></i> Visual Lab
+                </button>
+                <button onclick="switchMainView('quiz')" id="btn-view-quiz" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-white transition-all">
+                    <i class="fa-solid fa-brain mr-1.5"></i> Flashcards
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobileMenu" class="hidden md:hidden mt-3 pt-3 border-t border-white/10 grid grid-cols-2 gap-2">
+            <button onclick="switchMainView('dashboard')" class="px-3 py-2 rounded-lg text-xs font-semibold bg-accent/20 text-accent text-left">
+                <i class="fa-solid fa-grid-2 mr-1.5"></i> All Notes
+            </button>
+            <button onclick="switchMainView('syllabus')" class="px-3 py-2 rounded-lg text-xs font-semibold glass-card text-left">
+                <i class="fa-solid fa-list-check mr-1.5"></i> Syllabus Outline
+            </button>
+            <button onclick="switchMainView('visualizers')" class="px-3 py-2 rounded-lg text-xs font-semibold glass-card text-left">
+                <i class="fa-solid fa-cube mr-1.5"></i> Visual Lab
+            </button>
+            <button onclick="switchMainView('quiz')" class="px-3 py-2 rounded-lg text-xs font-semibold glass-card text-left">
+                <i class="fa-solid fa-brain mr-1.5"></i> Flashcards
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 lg:px-8 py-6 flex flex-col gap-6">
+
+        <!-- Hero Banner -->
+        <div class="glass-panel-accent rounded-2xl p-6 lg:p-8 relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                <div>
+                    <div class="flex items-center space-x-2 text-accent text-xs font-semibold tracking-wider uppercase mb-2">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                        <span>Sheryians Coding School Notes + Syllabus Merged</span>
+                    </div>
+                    <h2 class="text-2xl lg:text-3xl font-extrabold text-white tracking-tight">
+                        Methods, Memory Layouts, Arrays & String Deep Dive
+                    </h2>
+                    <p class="text-sm text-gray-300 mt-2 max-w-2xl leading-relaxed">
+                        Master Java Data Structures, Pass-by-Value mechanics, Stack & Heap memory models, 2D/Jagged Arrays, OOP Constructors, and String Constant Pool internals with live interactive visual simulations.
+                    </p>
+                </div>
+                
+                <!-- Stats Pill Cards -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full md:w-auto">
+                    <div class="glass-card rounded-xl p-3 text-center">
+                        <span class="block text-accent font-bold text-xl">5</span>
+                        <span class="text-[10px] uppercase text-gray-400 font-semibold tracking-wider">Modules</span>
+                    </div>
+                    <div class="glass-card rounded-xl p-3 text-center">
+                        <span class="block text-accent font-bold text-xl">18+</span>
+                        <span class="text-[10px] uppercase text-gray-400 font-semibold tracking-wider">Topics</span>
+                    </div>
+                    <div class="glass-card rounded-xl p-3 text-center">
+                        <span class="block text-accent font-bold text-xl">5</span>
+                        <span class="text-[10px] uppercase text-gray-400 font-semibold tracking-wider">Visualizers</span>
+                    </div>
+                    <div class="glass-card rounded-xl p-3 text-center">
+                        <span class="block text-accent font-bold text-xl">100%</span>
+                        <span class="text-[10px] uppercase text-gray-400 font-semibold tracking-wider">Offline Ready</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Pills Bar -->
+        <div id="categoryFilterBar" class="flex items-center space-x-2 overflow-x-auto pb-2 scrollbar-none">
+            <button onclick="filterCategory('all')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-medium whitespace-nowrap transition-all active-tab">
+                All Topics
+            </button>
+            <button onclick="filterCategory('methods')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-medium whitespace-nowrap glass-card text-gray-300 hover:text-white transition-all">
+                <i class="fa-solid fa-code mr-1.5 text-accent"></i> Methods & Parameters
+            </button>
+            <button onclick="filterCategory('arrays')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-medium whitespace-nowrap glass-card text-gray-300 hover:text-white transition-all">
+                <i class="fa-solid fa-layer-group mr-1.5 text-accent"></i> Arrays & Memory
+            </button>
+            <button onclick="filterCategory('oops')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-medium whitespace-nowrap glass-card text-gray-300 hover:text-white transition-all">
+                <i class="fa-solid fa-cubes mr-1.5 text-accent"></i> OOPs & Constructors
+            </button>
+            <button onclick="filterCategory('strings')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-medium whitespace-nowrap glass-card text-gray-300 hover:text-white transition-all">
+                <i class="fa-solid fa-font mr-1.5 text-accent"></i> Strings & StringBuilder
+            </button>
+            <button onclick="filterCategory('leetcode')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-medium whitespace-nowrap glass-card text-gray-300 hover:text-white transition-all">
+                <i class="fa-solid fa-trophy mr-1.5 text-accent"></i> Practice & LeetCode
+            </button>
+        </div>
+
+        <!-- VIEW 1: MAIN DASHBOARD VIEW (CARDS & NOTES) -->
+        <div id="view-dashboard" class="space-y-6">
+            <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamic Content Cards will be rendered via JS -->
+            </div>
+        </div>
+
+        <!-- VIEW 2: SYLLABUS OUTLINE VIEW -->
+        <div id="view-syllabus" class="hidden space-y-6">
+            <div class="glass-panel rounded-2xl p-6 border border-white/10">
+                <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-accent"></i> Structured Learning Roadmap
+                </h3>
+                <p class="text-xs text-gray-400 mb-6">Click any topic item to quickly jump to its detailed notes or interactive simulation.</p>
+                <div id="syllabusTree" class="space-y-6">
+                    <!-- Dynamic Syllabus Structure Rendered Here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 3: INTERACTIVE VISUALIZERS HUB -->
+        <div id="view-visualizers" class="hidden space-y-6">
+            <div class="flex flex-wrap gap-2 border-b border-white/10 pb-4">
+                <button onclick="switchVisualizerTab('vis-memory')" id="tab-vis-memory" class="vis-tab-btn px-4 py-2 rounded-xl text-xs font-semibold active-tab">
+                    Stack vs Heap Memory
+                </button>
+                <button onclick="switchVisualizerTab('vis-passbyval')" id="tab-vis-passbyval" class="vis-tab-btn px-4 py-2 rounded-xl text-xs font-semibold glass-card text-gray-300 hover:text-white">
+                    Pass-By-Value Visualizer
+                </button>
+                <button onclick="switchVisualizerTab('vis-jagged')" id="tab-vis-jagged" class="vis-tab-btn px-4 py-2 rounded-xl text-xs font-semibold glass-card text-gray-300 hover:text-white">
+                    2D & Jagged Array Grid
+                </button>
+                <button onclick="switchVisualizerTab('vis-stringpool')" id="tab-vis-stringpool" class="vis-tab-btn px-4 py-2 rounded-xl text-xs font-semibold glass-card text-gray-300 hover:text-white">
+                    String Pool vs Heap
+                </button>
+                <button onclick="switchVisualizerTab('vis-builder')" id="tab-vis-builder" class="vis-tab-btn px-4 py-2 rounded-xl text-xs font-semibold glass-card text-gray-300 hover:text-white">
+                    StringBuilder Growth Simulator
+                </button>
+            </div>
+
+            <!-- VISUALIZER 1: Stack vs Heap Memory -->
+            <div id="vis-memory" class="vis-content glass-panel rounded-2xl p-6">
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
+                    <div>
+                        <h4 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-database text-accent"></i> Stack vs. Heap Allocation Model
+                        </h4>
+                        <p class="text-xs text-gray-400 mt-1">Primitives store values directly in Stack. Object references store heap hex addresses.</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="runMemorySim('primitive')" class="px-3 py-1.5 rounded-lg bg-accent/20 hover:bg-accent/30 text-accent text-xs font-semibold border border-accent/30">
+                            + Allocate Primitive
+                        </button>
+                        <button onclick="runMemorySim('array')" class="px-3 py-1.5 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 text-xs font-semibold border border-blue-500/30">
+                            + Allocate Array (Heap)
+                        </button>
+                        <button onclick="resetMemorySim()" class="px-3 py-1.5 rounded-lg glass-card text-xs text-gray-400 hover:text-white">
+                            Reset
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Stack Column -->
+                    <div class="glass-card rounded-xl p-4 border border-white/10">
+                        <div class="flex items-center justify-between border-b border-white/10 pb-2 mb-4">
+                            <span class="font-mono text-xs text-accent font-bold uppercase tracking-wider">Stack Memory (LIFO)</span>
+                            <span class="text-[10px] text-gray-400">Predefined & Execution Frames</span>
+                        </div>
+                        <div id="stackFrameContainer" class="space-y-3 min-h-[260px] flex flex-col justify-end">
+                            <!-- Stack items inserted here -->
+                        </div>
+                    </div>
+
+                    <!-- Heap Column -->
+                    <div class="glass-card rounded-xl p-4 border border-white/10">
+                        <div class="flex items-center justify-between border-b border-white/10 pb-2 mb-4">
+                            <span class="font-mono text-xs text-blue-400 font-bold uppercase tracking-wider">Heap Memory (Dynamic)</span>
+                            <span class="text-[10px] text-gray-400">Stores Actual Objects & Arrays</span>
+                        </div>
+                        <div id="heapObjectContainer" class="space-y-3 min-h-[260px] flex flex-wrap content-start gap-3">
+                            <!-- Heap items inserted here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISUALIZER 2: Pass By Value -->
+            <div id="vis-passbyval" class="vis-content hidden glass-panel rounded-2xl p-6">
+                <div class="mb-6">
+                    <h4 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-arrows-split-up-and-left text-accent"></i> Java Pass-By-Value Mechanics
+                    </h4>
+                    <p class="text-xs text-gray-400 mt-1">Java is strictly Pass-by-Value. For objects, it passes a copy of the reference address.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="glass-card p-4 rounded-xl space-y-4">
+                        <h5 class="text-sm font-semibold text-white border-b border-white/10 pb-2">Step Controls</h5>
+                        <div class="space-y-2">
+                            <button onclick="simPassByValue('primitive')" class="w-full text-left p-3 rounded-lg glass-card hover:border-accent text-xs font-mono transition-all">
+                                <span class="text-accent font-bold block mb-1">Scenario A: Primitive (int a)</span>
+                                Modifying local copy does NOT alter caller value.
+                            </button>
+                            <button onclick="simPassByValue('objModify')" class="w-full text-left p-3 rounded-lg glass-card hover:border-accent text-xs font-mono transition-all">
+                                <span class="text-blue-400 font-bold block mb-1">Scenario B: Array Index Mod</span>
+                                Mutating internal property affects original heap object.
+                            </button>
+                            <button onclick="simPassByValue('objReassign')" class="w-full text-left p-3 rounded-lg glass-card hover:border-accent text-xs font-mono transition-all">
+                                <span class="text-green-400 font-bold block mb-1">Scenario C: Reassigning 'new'</span>
+                                Re-instantiating severs reference copy to main object!
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-2 glass-card p-4 rounded-xl flex flex-col justify-between">
+                        <div id="passByValueDisplay" class="font-mono text-xs leading-relaxed space-y-3">
+                            <div class="p-3 bg-darkBg/60 rounded-lg border border-white/10">
+                                Select a scenario on the left to run step-by-step memory trace.
+                            </div>
+                        </div>
+                        <div id="passByValOutput" class="mt-4 p-3 rounded-lg bg-accent/10 border border-accent/20 text-xs font-mono text-accent">
+                            Output Log: Ready...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISUALIZER 3: 2D & Jagged Arrays -->
+            <div id="vis-jagged" class="vis-content hidden glass-panel rounded-2xl p-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                    <div>
+                        <h4 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-table-cells text-accent"></i> Interactive Jagged & 2D Array Matrix
+                        </h4>
+                        <p class="text-xs text-gray-400 mt-1">Jagged arrays are arrays of arrays where inner rows have differing lengths.</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="renderMatrix('rectangular')" class="px-3 py-1.5 rounded-lg glass-card text-xs font-semibold hover:text-white text-gray-300">
+                            Standard 3x3 Matrix
+                        </button>
+                        <button onclick="renderMatrix('jagged')" class="px-3 py-1.5 rounded-lg bg-accent/20 text-accent border border-accent/30 text-xs font-semibold">
+                            Jagged Matrix [4][varying]
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 glass-card p-6 rounded-xl space-y-4">
+                        <div id="matrixContainer" class="space-y-3">
+                            <!-- Matrix rows generated dynamically -->
+                        </div>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl space-y-3">
+                        <h5 class="text-xs font-mono uppercase text-accent font-bold">Element Inspector</h5>
+                        <div id="matrixInspector" class="text-xs text-gray-300 space-y-2">
+                            <p class="italic text-gray-500">Click any element box in the grid to inspect its row index, column index, calculated base address, and value.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISUALIZER 4: String Pool vs Heap -->
+            <div id="vis-stringpool" class="vis-content hidden glass-panel rounded-2xl p-6">
+                <div class="mb-6">
+                    <h4 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-clone text-accent"></i> String Pool vs Heap Allocation
+                    </h4>
+                    <p class="text-xs text-gray-400 mt-1">String literals reuse memory in String Constant Pool (SCP). `new String()` forces new Heap objects.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div class="glass-card p-4 rounded-xl space-y-3">
+                            <h5 class="text-xs font-bold text-white uppercase tracking-wider">Create String Variable</h5>
+                            <div class="flex gap-2">
+                                <input type="text" id="strValInput" value="Sheryians" class="glass-input px-3 py-1.5 rounded-lg text-xs flex-grow">
+                                <button onclick="addStringSim('literal')" class="px-3 py-1.5 rounded-lg bg-accent text-darkBg text-xs font-bold">
+                                    Literal ""
+                                </button>
+                                <button onclick="addStringSim('new')" class="px-3 py-1.5 rounded-lg bg-blue-500 text-white text-xs font-bold">
+                                    new String()
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="glass-card p-4 rounded-xl space-y-2 font-mono text-xs">
+                            <span class="text-accent font-bold block mb-2">Created Variables Reference Map:</span>
+                            <div id="stringVarsList" class="space-y-2 max-h-48 overflow-y-auto">
+                                <!-- Dynamic List -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-4 rounded-xl flex flex-col justify-between">
+                        <h5 class="text-xs font-bold text-white uppercase tracking-wider border-b border-white/10 pb-2 mb-3">
+                            Heap Memory Structure
+                        </h5>
+                        <div class="relative min-h-[220px] bg-darkBg/60 border border-white/10 rounded-xl p-4 flex flex-col justify-between">
+                            <!-- Inner SCP Area -->
+                            <div class="border border-dashed border-accent/40 bg-accent/5 rounded-lg p-3 relative">
+                                <span class="absolute right-2 top-2 text-[10px] text-accent font-mono font-bold">String Constant Pool (SCP)</span>
+                                <div id="scpContainer" class="flex flex-wrap gap-2 mt-4 min-h-[50px]">
+                                    <!-- Dynamic SCP Items -->
+                                </div>
+                            </div>
+                            <!-- Heap Standard Area -->
+                            <div class="border border-dashed border-blue-500/40 bg-blue-500/5 rounded-lg p-3 mt-3 relative">
+                                <span class="absolute right-2 top-2 text-[10px] text-blue-400 font-mono font-bold">Heap Direct Objects</span>
+                                <div id="heapStringContainer" class="flex flex-wrap gap-2 mt-4 min-h-[50px]">
+                                    <!-- Dynamic Heap Direct Strings -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISUALIZER 5: StringBuilder Growth -->
+            <div id="vis-builder" class="vis-content hidden glass-panel rounded-2xl p-6">
+                <div class="mb-6">
+                    <h4 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-arrows-maximize text-accent"></i> Dynamic Capacity Growth Formula
+                    </h4>
+                    <p class="text-xs text-gray-400 mt-1">Formula when full: <span class="font-mono text-accent font-bold">(Previous Capacity + 1) * 2</span></p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass-card p-4 rounded-xl space-y-4">
+                        <h5 class="text-xs font-bold text-white uppercase">Append Characters</h5>
+                        <div class="space-y-2">
+                            <input type="text" id="appendCharInput" placeholder="Text to append..." value="Hello Java!" class="w-full glass-input p-2 rounded-lg text-xs">
+                            <button onclick="appendToStringBuilder()" class="w-full py-2 rounded-lg bg-accent text-darkBg font-bold text-xs">
+                                Append to Buffer
+                            </button>
+                            <button onclick="resetStringBuilder()" class="w-full py-1.5 rounded-lg glass-card text-xs text-gray-400 hover:text-white">
+                                Reset StringBuilder
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-2 glass-card p-6 rounded-xl space-y-6">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="p-4 bg-darkBg/60 rounded-xl border border-white/10 text-center">
+                                <span class="text-[10px] uppercase text-gray-400 block font-semibold">Current Length</span>
+                                <span id="builderLengthVal" class="text-3xl font-extrabold text-accent">0</span>
+                            </div>
+                            <div class="p-4 bg-darkBg/60 rounded-xl border border-white/10 text-center">
+                                <span class="text-[10px] uppercase text-gray-400 block font-semibold">Current Capacity</span>
+                                <span id="builderCapVal" class="text-3xl font-extrabold text-blue-400">16</span>
+                            </div>
+                        </div>
+
+                        <!-- Buffer Visualization Bar -->
+                        <div>
+                            <div class="flex justify-between text-xs text-gray-400 mb-2">
+                                <span>Buffer Array Visualization</span>
+                                <span id="capacityPercent">0% Filled</span>
+                            </div>
+                            <div class="w-full bg-darkBg h-6 rounded-lg overflow-hidden border border-white/10 flex relative" id="builderBarContainer">
+                                <!-- Visual Blocks -->
+                            </div>
+                        </div>
+
+                        <div id="builderHistory" class="text-xs font-mono text-gray-400 space-y-1">
+                            <p class="text-accent font-bold">Cap Resizing History Log:</p>
+                            <p>• Initialized with default capacity: 16 chars.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 4: FLASHCARDS & QUIZ VIEW -->
+        <div id="view-quiz" class="hidden space-y-6 max-w-2xl mx-auto w-full">
+            <div class="glass-panel rounded-2xl p-6 text-center space-y-6">
+                <div class="flex items-center justify-between border-b border-white/10 pb-4">
+                    <span class="text-xs font-mono text-accent font-bold" id="flashcardCounter">Card 1 of 8</span>
+                    <span class="text-xs text-gray-400">Click Card to Flip</span>
+                </div>
+
+                <!-- Interactive Flip Card -->
+                <div id="flashcard" onclick="flipCard()" class="min-h-[240px] glass-card rounded-2xl p-8 flex flex-col items-center justify-center cursor-pointer transition-all duration-500 border border-white/10 hover:border-accent/50 relative">
+                    <span id="flashcardTag" class="absolute top-4 left-4 text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-accent/20 text-accent font-bold">
+                        Methods & Memory
+                    </span>
+                    <div id="flashcardFront" class="text-lg font-bold text-white">
+                        <!-- Front Text -->
+                    </div>
+                    <div id="flashcardBack" class="hidden text-sm text-gray-300 leading-relaxed font-mono">
+                        <!-- Back Text -->
+                    </div>
+                </div>
+
+                <div class="flex justify-center items-center space-x-4">
+                    <button onclick="prevFlashcard()" class="px-4 py-2 rounded-xl glass-card hover:bg-white/5 text-xs font-bold text-gray-300">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> Prev
+                    </button>
+                    <button onclick="nextFlashcard()" class="px-6 py-2 rounded-xl bg-accent text-darkBg text-xs font-bold shadow-lg shadow-accent/20">
+                        Next <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="glass-panel border-t border-white/10 py-4 px-4 text-center text-xs text-gray-500 mt-auto">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+            <span>Java Core & Data Structures - Merged Syllabus & Sheryians PDF Notes</span>
+            <span class="text-gray-400">Designed for GitHub Pages Live Hosting</span>
+        </div>
+    </footer>
+
+    <!-- JavaScript Data & Logic -->
+    <script>
+        // Global Data Store merging PDF Notes + Syllabus Topics
+        const topicsData = [
+            {
+                id: 'methods-def',
+                category: 'methods',
+                tag: 'Day 16 Note',
+                title: 'Methods & Signature Prototype',
+                syllabusTopic: '1. Methods & Functions in Java',
+                summary: 'A block of code that performs a specific task. Executes only when invoked.',
+                content: `
+                    <p class="text-xs text-gray-300 mb-3 leading-relaxed">
+                        Methods provide for easy code reusability and modular design. In Java, method declaration syntax includes access modifiers, static keywords, return types, name, and parameters.
+                    </p>
+                    <div class="glass-card p-3 rounded-xl mb-3">
+                        <span class="text-[10px] font-mono uppercase text-accent font-bold block mb-1">Syntax Structure</span>
+                        <code class="text-xs font-mono text-gray-200">accessModifier returnType methodName(parameters) { // Logic }</code>
+                    </div>
+                `,
+                code: `// Day 16 PDF Example
+public class MethodDemo {
+    public static int sum(int a, int b) {
+        int sum = a + b;
+        return sum; // Returns value back to caller
+    }
+}`,
+                visualizerLink: 'vis-memory'
+            },
+            {
+                id: 'static-vs-nonstatic',
+                category: 'methods',
+                tag: 'Day 16 Note',
+                title: 'Static vs Non-Static Methods',
+                syllabusTopic: '1. Methods & Functions in Java',
+                summary: 'Static methods belong to class; Non-static attach to specific instances.',
+                content: `
+                    <ul class="text-xs text-gray-300 space-y-2 list-disc pl-4 mb-3">
+                        <li><strong class="text-accent">Static Methods:</strong> Declared with static keyword. Do NOT need object instantiation to invoke. (e.g., Math.sqrt()).</li>
+                        <li><strong class="text-blue-400">Non-Static (Instance) Methods:</strong> Attached to specific objects. Require creating an object with <code class="text-accent">new</code> keyword.</li>
+                    </ul>
+                `,
+                code: `// Static call: ClassName.methodName()
+Demo.sum(1, 2);
+
+// Non-Static call: objectRef.methodName()
+Demo obj = new Demo();
+obj.sum(1, 2);`,
+                visualizerLink: 'vis-memory'
+            },
+            {
+                id: 'pass-by-value',
+                category: 'methods',
+                tag: 'Day 17 Note',
+                title: 'Arguments & Pass-By-Value Mechanics',
+                syllabusTopic: '1. Methods & Functions in Java',
+                summary: 'Java supports Pass-by-Value strictly. Primitive vs Reference copy rules.',
+                content: `
+                    <p class="text-xs text-gray-300 mb-3 leading-relaxed">
+                        <strong>Formal Arguments:</strong> Variables in method definition.<br>
+                        <strong>Actual Arguments:</strong> Values passed during method call.<br><br>
+                        Java passes a copy of the variable. For primitive types, changes inside method don't affect caller. For non-primitives, Java passes a copy of the reference address pointing to heap memory.
+                    </p>
+                `,
+                code: `public static void solve(int a) {
+    a = a + 10; // Only modifies local stack copy!
+}
+
+public static void add(int[] array) {
+    array[0] = 10; // Modifies actual heap object!
+}`,
+                visualizerLink: 'vis-passbyval'
+            },
+            {
+                id: 'varargs',
+                category: 'methods',
+                tag: 'Day 17 Note',
+                title: 'Variable Arguments (Varargs ...)',
+                syllabusTopic: '1. Methods & Functions in Java',
+                summary: 'Allows methods to accept zero or multiple arguments as internal 1D arrays.',
+                content: `
+                    <p class="text-xs text-gray-300 mb-2">Key rules for Varargs:</p>
+                    <ul class="text-xs text-gray-300 space-y-1 list-disc pl-4 mb-3">
+                        <li>Only one varargs parameter per method allowed.</li>
+                        <li>Varargs parameter <strong>must be the last parameter</strong> in parameter list.</li>
+                    </ul>
+                `,
+                code: `public static void solve(int... a) {
+    // 'a' is treated as single dimension array int[]
+    for(int elem : a) {
+        System.out.print(elem + " ");
+    }
+}`,
+                visualizerLink: 'vis-memory'
+            },
+            {
+                id: 'arrays-memory',
+                category: 'arrays',
+                tag: 'Day 15 Note',
+                title: '1D Arrays & Memory Base Address',
+                syllabusTopic: '3. Arrays in Java',
+                summary: 'Linear data structure stored in contiguous memory locations.',
+                content: `
+                    <p class="text-xs text-gray-300 mb-3">
+                        Arrays are non-primitive fixed-size data types storing elements sequentially. Stack holds the reference while Heap memory holds the array elements.
+                    </p>
+                    <div class="glass-card p-3 rounded-xl mb-3 text-xs font-mono text-accent">
+                        Element Address Formula = Base Address + (Index * Element Size in Bytes)
+                    </div>
+                `,
+                code: `// Array Declaration & Memory Instantiation
+int[] numbers = new int[5];
+
+// Direct Initialization
+int[] arr = new int[]{1, 2, 3};`,
+                visualizerLink: 'vis-memory'
+            },
+            {
+                id: 'enhanced-for',
+                category: 'arrays',
+                tag: 'Day 15 Note',
+                title: 'Enhanced For Loop (for-each)',
+                syllabusTopic: '3. Arrays in Java',
+                summary: 'Simplified traversal without explicit array indexing (Introduced in Java 5).',
+                content: `
+                    <p class="text-xs text-gray-300 mb-3">
+                        Traverse arrays cleanly without maintaining explicit counter variables. Reduces boilerplate code and avoids array index out of bound errors.
+                    </p>
+                `,
+                code: `int arr[] = {1, 2, 3};
+for (int elem : arr) {
+    System.out.print(elem + ", ");
+}`,
+                visualizerLink: 'vis-jagged'
+            },
+            {
+                id: 'jagged-arrays',
+                category: 'arrays',
+                tag: 'Day 18 Note',
+                title: 'Multi-Dimensional & Jagged Arrays',
+                syllabusTopic: '3. Arrays in Java',
+                summary: 'Non-rectangular arrays of arrays with rows of varying column lengths.',
+                content: `
+                    <p class="text-xs text-gray-300 mb-3">
+                        2D arrays are collections of 1D arrays. Jagged arrays allow each row to hold arrays of completely different sizes, optimizing memory space.
+                    </p>
+                `,
+                code: `// Declaring 3 rows jagged array
+int[][] jaggedArray = new int[3][]; 
+jaggedArray[0] = new int[4]; // Row 0 has 4 elements
+jaggedArray[1] = new int[5]; // Row 1 has 5 elements
+jaggedArray[2] = new int[1]; // Row 2 has 1 element`,
+                visualizerLink: 'vis-jagged'
+            },
+            {
+                id: 'oops-basics',
+                category: 'oops',
+                tag: 'Day 19 Note',
+                title: 'OOPs Pillars & Class vs Object',
+                syllabusTopic: '2. Object-Oriented Fundamentals',
+                summary: 'Real-world problem solving paradigm with Classes (Blueprint) and Objects (Instances).',
+                content: `
+                    <p class="text-xs text-gray-300 mb-2">Main Pillars of OOPs:</p>
+                    <div class="grid grid-cols-2 gap-2 text-[11px] font-mono text-accent mb-3">
+                        <span class="glass-card p-1.5 rounded text-center">1. Object & Class</span>
+                        <span class="glass-card p-1.5 rounded text-center">2. Inheritance</span>
+                        <span class="glass-card p-1.5 rounded text-center">3. Polymorphism</span>
+                        <span class="glass-card p-1.5 rounded text-center">4. Encapsulation & Abstraction</span>
+                    </div>
+                `,
+                code: `// Class definition (template - no memory allocated)
+class Student {
+    String name;
+    int age;
+}
+// Object creation (occupies heap memory)
+Student s1 = new Student();`,
+                visualizerLink: 'vis-memory'
+            },
+            {
+                id: 'constructors',
+                category: 'oops',
+                tag: 'Day 20 Note',
+                title: 'Constructors & "this" Keyword',
+                syllabusTopic: '2. Object-Oriented Fundamentals',
+                summary: 'Special method invoked at object creation to initialize attributes.',
+                content: `
+                    <ul class="text-xs text-gray-300 space-y-1 list-disc pl-4 mb-3">
+                        <li>Has exact same name as Class.</li>
+                        <li>No return type (not even void).</li>
+                        <li><strong>this Keyword:</strong> Resolves variable shadowing between instance attributes and local parameter names.</li>
+                    </ul>
+                `,
+                code: `public class Student {
+    String name;
+    int age;
+
+    // Parameterized Constructor
+    public Student(String name, int age) {
+        this.name = name; // 'this' points to current object attribute
+        this.age = age;
+    }
+}`,
+                visualizerLink: 'vis-memory'
+            },
+            {
+                id: 'strings-scp',
+                category: 'strings',
+                tag: 'Day 21 Note',
+                title: 'String Literal vs new String() & SCP',
+                syllabusTopic: '4. Strings & String Handling',
+                summary: 'Immutability of Strings and String Constant Pool (SCP) memory layout.',
+                content: `
+                    <p class="text-xs text-gray-300 mb-3">
+                        Strings are immutable sequences of characters. Literal strings are stored inside the <strong>String Constant Pool (SCP)</strong> to save memory by sharing references. <code class="text-accent">new String()</code> forces separate Heap instances.
+                    </p>
+                `,
+                code: `String str1 = "Pappu"; // Created in SCP
+String str2 = "Pappu"; // Points to existing SCP instance
+String str3 = new String("Pappu"); // Forces new object in Heap`,
+                visualizerLink: 'vis-stringpool'
+            },
+            {
+                id: 'string-builder',
+                category: 'strings',
+                tag: 'Day 22 Note',
+                title: 'StringBuilder & Dynamic Capacity',
+                syllabusTopic: '4. Strings & String Handling',
+                summary: 'Mutable character sequences for efficient string manipulations.',
+                content: `
+                    <p class="text-xs text-gray-300 mb-2">Key Properties:</p>
+                    <ul class="text-xs text-gray-300 space-y-1 list-disc pl-4 mb-3">
+                        <li>Default initial capacity = <strong>16 characters</strong>.</li>
+                        <li>Dynamic resizing formula: <code class="text-accent">(Old Capacity + 1) * 2</code></li>
+                    </ul>
+                `,
+                code: `StringBuilder sb = new StringBuilder();
+sb.append("Sheryians");
+sb.reverse(); // Reverses string in-place without creating new objects
+String result = sb.toString();`,
+                visualizerLink: 'vis-builder'
+            },
+            {
+                id: 'leetcode-practice',
+                category: 'leetcode',
+                tag: 'Syllabus Topic',
+                title: 'LeetCode & Interview Problem Solving',
+                syllabusTopic: '5. Problem-Solving & Coding Practice',
+                summary: 'Key algorithmic patterns covered for technical interviews (Amazon, Google).',
+                content: `
+                    <ul class="text-xs text-gray-300 space-y-2 list-disc pl-4 mb-3">
+                        <li><strong>String Reversal:</strong> Using 2-pointer approach or StringBuilder.reverse().</li>
+                        <li><strong>Array Manipulation:</strong> In-place element shifts, matrix traversals.</li>
+                        <li><strong>Pass-by-value traps:</strong> Swapping array elements via helper methods.</li>
+                    </ul>
+                `,
+                code: `// Two-Pointer String Reversal Pattern
+public static void reverseString(char[] s) {
+    int left = 0, right = s.length - 1;
+    while (left < right) {
+        char temp = s[left];
+        s[left++] = s[right];
+        s[right--] = temp;
+    }
+}`,
+                visualizerLink: 'vis-passbyval'
+            }
+        ];
+
+        // Flashcards Data
+        const flashcards = [
+            {
+                tag: "Methods & Memory",
+                q: "Does Java support Pass-By-Reference?",
+                a: "NO! Java strictly supports Pass-By-Value ONLY. When passing non-primitive objects/arrays, Java passes a COPY of the reference address."
+            },
+            {
+                tag: "Arrays & Memory",
+                q: "How does JVM calculate array element memory address?",
+                a: "Address = Base Address + (index * size_of_datatype_in_bytes). E.g., for int: 100 + (1 * 4) = 104."
+            },
+            {
+                tag: "Strings & Memory",
+                q: "What is the difference between str1 == str2 and str1.equals(str2)?",
+                a: "'==' compares both object memory address and values. '.equals()' compares string content character by character."
+            },
+            {
+                tag: "StringBuilder",
+                q: "What is the formula when StringBuilder capacity gets full?",
+                a: "New Capacity = (Previous Capacity + 1) * 2. Default initial empty capacity is 16."
+            },
+            {
+                tag: "OOP Basics",
+                q: "What is the difference between Class and Object?",
+                a: "Class is a logical user-defined template/blueprint that occupies NO memory. Object is a real-world instance that occupies memory in Heap."
+            },
+            {
+                tag: "Methods & Varargs",
+                q: "What are the two rules for using Varargs (...)?",
+                a: "1. Only ONE varargs parameter per method allowed.\n2. Varargs parameter MUST be the LAST parameter in the method signature."
+            },
+            {
+                tag: "Arrays",
+                q: "What is a Jagged Array in Java?",
+                a: "A jagged array is an array of arrays where each row inner array can have a different length (non-rectangular matrix)."
+            },
+            {
+                tag: "Strings",
+                q: "Why are Strings immutable in Java?",
+                a: "For security, caching, thread-safety, and allowing String Constant Pool (SCP) memory sharing."
+            }
+        ];
+
+        // App Initialization
+        window.onload = function() {
+            renderCards(topicsData);
+            renderSyllabusView();
+            initVisualizers();
+            loadFlashcard(0);
+
+            // Search input listener
+            document.getElementById('searchInput').addEventListener('input', handleSearch);
+            document.getElementById('clearSearch').addEventListener('click', clearSearch);
+            
+            // Mobile Menu Toggle
+            document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+                const menu = document.getElementById('mobileMenu');
+                menu.classList.toggle('hidden');
+            });
+        };
+
+        // Render Cards View
+        function renderCards(data) {
+            const grid = document.getElementById('cardsGrid');
+            if(data.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full glass-panel p-8 text-center rounded-2xl">
+                        <i class="fa-solid fa-folder-open text-3xl text-gray-500 mb-3"></i>
+                        <p class="text-sm text-gray-400">No matching topics or code notes found.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = data.map(item => `
+                <div class="glass-card rounded-2xl p-5 flex flex-col justify-between space-y-4">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-accent/15 text-accent border border-accent/20 font-semibold uppercase">
+                                ${item.tag}
+                            </span>
+                            <span class="text-[10px] text-gray-400 font-mono">${item.syllabusTopic.split('.')[0]}. Topic</span>
+                        </div>
+                        <h3 class="text-base font-bold text-white mb-2">${item.title}</h3>
+                        <p class="text-xs text-gray-300 leading-relaxed mb-3">${item.summary}</p>
+                        ${item.content}
+                        
+                        <div class="bg-darkBg/80 rounded-xl p-3 border border-white/10 relative group">
+                            <button onclick="copyCode(this)" class="absolute right-2 top-2 text-[10px] bg-white/10 hover:bg-white/20 text-gray-300 px-2 py-1 rounded transition-all">
+                                <i class="fa-regular fa-copy"></i> Copy
+                            </button>
+                            <pre class="text-xs font-mono text-gray-300 overflow-x-auto pt-4"><code>${escapeHtml(item.code)}</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="pt-2 border-t border-white/10 flex items-center justify-between text-xs">
+                        <button onclick="switchToVisualizer('${item.visualizerLink}')" class="text-accent hover:underline flex items-center gap-1 font-semibold">
+                            <i class="fa-solid fa-play text-[10px]"></i> Open Interactive Visualizer
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Escape HTML helper
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        // Render Syllabus Overview View
+        function renderSyllabusView() {
+            const container = document.getElementById('syllabusTree');
+            const categories = [
+                { name: '1. Methods & Functions in Java', filter: 'methods' },
+                { name: '2. Object-Oriented Fundamentals', filter: 'oops' },
+                { name: '3. Arrays in Java & Memory Model', filter: 'arrays' },
+                { name: '4. Strings & String Handling', filter: 'strings' },
+                { name: '5. Problem-Solving & Coding Practice', filter: 'leetcode' }
+            ];
+
+            container.innerHTML = categories.map(cat => {
+                const matched = topicsData.filter(t => t.syllabusTopic.toLowerCase().includes(cat.name.split('.')[1].trim().toLowerCase()));
+                return `
+                    <div class="glass-card p-4 rounded-xl">
+                        <h4 class="text-sm font-bold text-accent mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-folder text-xs"></i> ${cat.name}
+                        </h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-4 border-l border-white/10">
+                            ${matched.map(item => `
+                                <div onclick="filterCategory('${item.category}'); switchMainView('dashboard')" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 cursor-pointer text-xs font-mono text-gray-300 flex items-center justify-between">
+                                    <span>${item.title}</span>
+                                    <i class="fa-solid fa-chevron-right text-[10px] text-gray-500"></i>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Search & Filter functions
+        function handleSearch(e) {
+            const query = e.target.value.toLowerCase().trim();
+            const clearBtn = document.getElementById('clearSearch');
+            
+            if(query.length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+
+            const filtered = topicsData.filter(item => 
+                item.title.toLowerCase().includes(query) ||
+                item.summary.toLowerCase().includes(query) ||
+                item.code.toLowerCase().includes(query) ||
+                item.tag.toLowerCase().includes(query)
+            );
+            renderCards(filtered);
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('clearSearch').classList.add('hidden');
+            renderCards(topicsData);
+        }
+
+        function filterCategory(cat) {
+            document.querySelectorAll('.cat-filter-btn').forEach(btn => btn.classList.remove('active-tab'));
+            event.target.classList.add('active-tab');
+
+            if(cat === 'all') {
+                renderCards(topicsData);
+            } else {
+                const filtered = topicsData.filter(item => item.category === cat);
+                renderCards(filtered);
+            }
+        }
+
+        // View Switching Logic
+        function switchMainView(viewName) {
+            ['dashboard', 'syllabus', 'visualizers', 'quiz'].forEach(v => {
+                document.getElementById(`view-${v}`).classList.add('hidden');
+                document.getElementById(`btn-view-${v}`)?.classList.remove('active-tab');
+            });
+            document.getElementById(`view-${viewName}`).classList.remove('hidden');
+            document.getElementById(`btn-view-${viewName}`)?.classList.add('active-tab');
+        }
+
+        function switchToVisualizer(visId) {
+            switchMainView('visualizers');
+            switchVisualizerTab(visId);
+        }
+
+        function switchVisualizerTab(visId) {
+            document.querySelectorAll('.vis-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.vis-tab-btn').forEach(btn => btn.classList.remove('active-tab'));
+            
+            document.getElementById(visId).classList.remove('hidden');
+            document.getElementById(`tab-${visId}`)?.classList.add('active-tab');
+        }
+
+        // Copy Code Snippet
+        function copyCode(btn) {
+            const codeText = btn.nextElementSibling.innerText;
+            navigator.clipboard.writeText(codeText).then(() => {
+                btn.innerHTML = `<i class="fa-solid fa-check text-accent"></i> Copied!`;
+                setTimeout(() => {
+                    btn.innerHTML = `<i class="fa-regular fa-copy"></i> Copy`;
+                }, 2000);
+            });
+        }
+
+        /* --- VISUALIZERS INTERACTIVE LOGIC --- */
+        let stackItems = [];
+        let heapItems = [];
+
+        function initVisualizers() {
+            runMemorySim('primitive');
+            runMemorySim('array');
+            renderMatrix('jagged');
+            addStringSim('literal');
+            addStringSim('new');
+            resetStringBuilder();
+        }
+
+        // 1. Stack & Heap Memory Simulation
+        function runMemorySim(type) {
+            const stackContainer = document.getElementById('stackFrameContainer');
+            const heapContainer = document.getElementById('heapObjectContainer');
+
+            if (type === 'primitive') {
+                const val = Math.floor(Math.random() * 90) + 10;
+                const el = document.createElement('div');
+                el.className = 'p-2.5 rounded-lg bg-accent/15 border border-accent/30 text-xs font-mono flex justify-between items-center animate-fade-in';
+                el.innerHTML = `<span>int x = ${val}</span><span class="text-[10px] text-gray-400">Primitive (Stack Only)</span>`;
+                stackContainer.appendChild(el);
+            } else if (type === 'array') {
+                const hexAddr = '0x' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+                const stackEl = document.createElement('div');
+                stackEl.className = 'p-2.5 rounded-lg bg-blue-500/15 border border-blue-500/30 text-xs font-mono flex justify-between items-center';
+                stackEl.innerHTML = `<span>int[] arrRef</span><span class="text-blue-400 font-bold">${hexAddr}</span>`;
+                stackContainer.appendChild(stackEl);
+
+                const heapEl = document.createElement('div');
+                heapEl.className = 'p-3 rounded-xl bg-blue-500/10 border border-blue-500/30 text-xs font-mono space-y-1 min-w-[140px]';
+                heapEl.innerHTML = `
+                    <div class="text-[10px] text-blue-400 font-bold">Address: ${hexAddr}</div>
+                    <div class="text-gray-300">Array [10, 20, 30]</div>
+                    <div class="text-[9px] text-gray-500">Size: 3 elements (Contiguous)</div>
+                `;
+                heapContainer.appendChild(heapEl);
+            }
+        }
+
+        function resetMemorySim() {
+            document.getElementById('stackFrameContainer').innerHTML = '';
+            document.getElementById('heapObjectContainer').innerHTML = '';
+        }
+
+        // 2. Pass By Value Simulation
+        function simPassByValue(mode) {
+            const display = document.getElementById('passByValueDisplay');
+            const outLog = document.getElementById('passByValOutput');
+
+            if (mode === 'primitive') {
+                display.innerHTML = `
+                    <div class="p-3 bg-white/5 rounded-lg border border-white/10 space-y-2">
+                        <p class="text-accent font-bold">Step 1: main() declares int a = 10;</p>
+                        <p>Step 2: Calls solve(a) -> Value 10 is COPIED into method parameter local variable 'a'.</p>
+                        <p>Step 3: Inside method: a = a + 10 (Local 'a' becomes 20).</p>
+                        <p>Step 4: Method finishes & stack frame deleted.</p>
+                        <p class="text-green-400 font-bold">Result in main(): Value of 'a' remains 10!</p>
+                    </div>
+                `;
+                outLog.innerText = `Output Log: main() 'a' = 10 | solve() 'a' = 20 -> Caller unchanged.`;
+            } else if (mode === 'objModify') {
+                display.innerHTML = `
+                    <div class="p-3 bg-white/5 rounded-lg border border-white/10 space-y-2">
+                        <p class="text-blue-400 font-bold">Step 1: int[] array = {2, 3} at Heap address 0x011ee</p>
+                        <p>Step 2: Calls add(array) -> Reference copy 0x011ee passed to method parameter.</p>
+                        <p>Step 3: Inside method: array[0] = 10 modifies Heap index 0 at address 0x011ee.</p>
+                        <p class="text-accent font-bold">Result in main(): Properties modified! Original array[0] becomes 10!</p>
+                    </div>
+                `;
+                outLog.innerText = `Output Log: Result from method: 13 | Result from main: 13`;
+            } else if (mode === 'objReassign') {
+                display.innerHTML = `
+                    <div class="p-3 bg-white/5 rounded-lg border border-white/10 space-y-2">
+                        <p class="text-green-400 font-bold">Step 1: Integer[] array initialized at 0x011ee with {2, 3}</p>
+                        <p>Step 2: Inside method: array = new Integer[2]; (Re-instantiation!)</p>
+                        <p>Step 3: Method parameter reference breaks away and points to NEW Heap address 0x999ff.</p>
+                        <p>Step 4: Method modifies new object at 0x999ff.</p>
+                        <p class="text-red-400 font-bold">Result in main(): Original object at 0x011ee UNCHANGED! (Value = 5)</p>
+                    </div>
+                `;
+                outLog.innerText = `Output Log: Result from method: 13 | Result from main: 5`;
+            }
+        }
+
+        // 3. Matrix & Jagged Array Visualizer
+        function renderMatrix(type) {
+            const container = document.getElementById('matrixContainer');
+            let data = [];
+            
+            if (type === 'rectangular') {
+                data = [
+                    [19, 29, 84],
+                    [2, 101, 9],
+                    [99, 43, 68]
+                ];
+            } else {
+                data = [
+                    [19, 29, 84],
+                    [2, 101, 9, 68, 43],
+                    [99]
+                ];
+            }
+
+            container.innerHTML = data.map((row, rIdx) => `
+                <div class="flex items-center space-x-2">
+                    <span class="w-16 font-mono text-[10px] text-accent font-bold">ROW ${rIdx}:</span>
+                    <div class="flex flex-wrap gap-2">
+                        ${row.map((val, cIdx) => `
+                            <div onclick="inspectElement(${rIdx}, ${cIdx}, ${val})" class="w-12 h-12 rounded-xl glass-card hover:border-accent flex items-center justify-center font-mono text-xs font-bold text-white cursor-pointer transition-all">
+                                ${val}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function inspectElement(r, c, val) {
+            const baseAddr = 100;
+            const calcAddr = baseAddr + (r * 12) + (c * 4);
+            document.getElementById('matrixInspector').innerHTML = `
+                <div class="p-3 bg-darkBg/80 rounded-lg border border-accent/30 space-y-1.5 font-mono">
+                    <p class="text-accent font-bold">Element: matrix[${r}][${c}]</p>
+                    <p>Value: <span class="text-white font-bold">${val}</span></p>
+                    <p>Simulated Memory Address: <span class="text-blue-400">0x${calcAddr}</span></p>
+                    <p class="text-[10px] text-gray-400">Row Length: ${r} offset index</p>
+                </div>
+            `;
+        }
+
+        // 4. String Pool Visualizer
+        let scpValues = new Set();
+        let heapStrings = [];
+        let stringVars = [];
+
+        function addStringSim(type) {
+            const val = document.getElementById('strValInput').value.trim() || 'Sheryians';
+            const varName = 'str' + (stringVars.length + 1);
+
+            if (type === 'literal') {
+                scpValues.add(val);
+                stringVars.push({ name: varName, val: val, type: 'SCP Literal', addr: 'SCP_' + val });
+            } else {
+                const heapAddr = '0xStr' + Math.floor(Math.random()*1000);
+                heapStrings.push({ val: val, addr: heapAddr });
+                stringVars.push({ name: varName, val: val, type: 'new String()', addr: heapAddr });
+            }
+
+            renderStringMemory();
+        }
+
+        function renderStringMemory() {
+            const scpContainer = document.getElementById('scpContainer');
+            const heapContainer = document.getElementById('heapStringContainer');
+            const varsList = document.getElementById('stringVarsList');
+
+            scpContainer.innerHTML = Array.from(scpValues).map(v => `
+                <span class="px-2.5 py-1 rounded bg-accent/20 border border-accent/40 text-accent font-mono text-xs">
+                    "${v}"
+                </span>
+            `).join('');
+
+            heapContainer.innerHTML = heapStrings.map(s => `
+                <span class="px-2.5 py-1 rounded bg-blue-500/20 border border-blue-500/40 text-blue-300 font-mono text-xs">
+                    "${s.val}" (${s.addr})
+                </span>
+            `).join('');
+
+            varsList.innerHTML = stringVars.map(v => `
+                <div class="flex justify-between items-center text-gray-300">
+                    <span>String ${v.name} = "${v.val}"</span>
+                    <span class="text-[10px] text-accent">${v.type} (${v.addr})</span>
+                </div>
+            `).join('');
+        }
+
+        // 5. StringBuilder Growth Simulator
+        let currentSbLength = 0;
+        let currentSbCapacity = 16;
+        let sbHistory = ["• Initialized with default capacity: 16 chars."];
+
+        function appendToStringBuilder() {
+            const input = document.getElementById('appendCharInput').value || 'Hello';
+            currentSbLength += input.length;
+
+            while (currentSbLength > currentSbCapacity) {
+                const oldCap = currentSbCapacity;
+                currentSbCapacity = (currentSbCapacity + 1) * 2;
+                sbHistory.push(`• Capacity Exceeded! Resized: (${oldCap} + 1) * 2 = ${currentSbCapacity}`);
+            }
+
+            renderStringBuilder();
+        }
+
+        function resetStringBuilder() {
+            currentSbLength = 0;
+            currentSbCapacity = 16;
+            sbHistory = ["• Initialized with default capacity: 16 chars."];
+            renderStringBuilder();
+        }
+
+        function renderStringBuilder() {
+            document.getElementById('builderLengthVal').innerText = currentSbLength;
+            document.getElementById('builderCapVal').innerText = currentSbCapacity;
+
+            const percent = Math.min(100, Math.round((currentSbLength / currentSbCapacity) * 100));
+            document.getElementById('capacityPercent').innerText = `${percent}% Filled`;
+
+            const barContainer = document.getElementById('builderBarContainer');
+            barContainer.innerHTML = '';
+
+            for (let i = 0; i < currentSbCapacity; i++) {
+                const cell = document.createElement('div');
+                cell.className = `flex-1 h-full border-r border-white/10 ${i < currentSbLength ? 'bg-accent' : 'bg-transparent'} transition-colors duration-200`;
+                barContainer.appendChild(cell);
+            }
+
+            const historyEl = document.getElementById('builderHistory');
+            historyEl.innerHTML = `<p class="text-accent font-bold">Cap Resizing History Log:</p>` + 
+                sbHistory.map(h => `<p>${h}</p>`).join('');
+        }
+
+        /* --- FLASHCARDS LOGIC --- */
+        let currentFlashcardIndex = 0;
+        let isFlipped = false;
+
+        function loadFlashcard(index) {
+            currentFlashcardIndex = index;
+            isFlipped = false;
+            const card = flashcards[currentFlashcardIndex];
+            
+            document.getElementById('flashcardCounter').innerText = `Card ${index + 1} of ${flashcards.length}`;
+            document.getElementById('flashcardTag').innerText = card.tag;
+            
+            const front = document.getElementById('flashcardFront');
+            const back = document.getElementById('flashcardBack');
+            
+            front.innerText = card.q;
+            back.innerText = card.a;
+            
+            front.classList.remove('hidden');
+            back.classList.add('hidden');
+        }
+
+        function flipCard() {
+            isFlipped = !isFlipped;
+            const front = document.getElementById('flashcardFront');
+            const back = document.getElementById('flashcardBack');
+
+            if (isFlipped) {
+                front.classList.add('hidden');
+                back.classList.remove('hidden');
+            } else {
+                front.classList.remove('hidden');
+                back.classList.add('hidden');
+            }
+        }
+
+        function nextFlashcard() {
+            const nextIdx = (currentFlashcardIndex + 1) % flashcards.length;
+            loadFlashcard(nextIdx);
+        }
+
+        function prevFlashcard() {
+            const prevIdx = (currentFlashcardIndex - 1 + flashcards.length) % flashcards.length;
+            loadFlashcard(prevIdx);
+        }
+    </script>
+
+    <!-- Interactive Glassmorphism Footer -->
+    <footer class="relative z-10 mt-16 border-t border-white/10 bg-[#111111]/80 backdrop-blur-md text-gray-300 transition-all duration-300 overflow-hidden">
+        <!-- Ambient glow background elements -->
+        <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#ff792e]/10 blur-[100px] rounded-full pointer-events-none"></div>
+        <div class="absolute bottom-0 left-10 w-64 h-64 bg-[#1c1c1c]/50 blur-[80px] rounded-full pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center border-b border-white/10 pb-8 mb-8">
+                
+                <!-- Branding Info -->
+                <div class="text-center md:text-left space-y-2">
+                    <div class="flex items-center justify-center md:justify-start space-x-3">
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#ff792e] to-[#ffaa6e] flex items-center justify-center text-black font-extrabold text-lg shadow-lg shadow-[#ff792e]/20">
+                            ☕
+                        </div>
+                        <span class="text-xl font-bold text-white tracking-wide">Java Core & DS</span>
+                    </div>
+                    <p class="text-sm text-gray-400">Master core concepts, algorithms, and data structures with interactive visualizations.</p>
+                </div>
+
+                <!-- Interactive Social Media Links -->
+                <div class="col-span-1 md:col-span-2">
+                    <h4 class="text-xs uppercase tracking-widest text-[#ff792e] font-semibold text-center md:text-right mb-4">Connect & Follow</h4>
+                    <div class="flex flex-wrap items-center justify-center md:justify-end gap-3">
+                        
+                        <!-- GitHub -->
+                        <a href="https://github.com" target="_blank" rel="noopener noreferrer" 
+                           class="group relative flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1c1c1c]/70 border border-white/10 hover:border-[#ff792e]/50 hover:bg-[#1c1c1c] transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,121,46,0.25)] hover:-translate-y-1">
+                            <svg class="w-5 h-5 fill-current text-gray-300 group-hover:text-[#ff792e] transition-colors" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                            <span class="text-sm font-medium text-gray-200 group-hover:text-white">GitHub</span>
+                        </a>
+
+                        <!-- LinkedIn -->
+                        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" 
+                           class="group relative flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1c1c1c]/70 border border-white/10 hover:border-[#ff792e]/50 hover:bg-[#1c1c1c] transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,121,46,0.25)] hover:-translate-y-1">
+                            <svg class="w-5 h-5 fill-current text-gray-300 group-hover:text-[#ff792e] transition-colors" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                            <span class="text-sm font-medium text-gray-200 group-hover:text-white">LinkedIn</span>
+                        </a>
+
+                        <!-- Twitter / X -->
+                        <a href="https://x.com" target="_blank" rel="noopener noreferrer" 
+                           class="group relative flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1c1c1c]/70 border border-white/10 hover:border-[#ff792e]/50 hover:bg-[#1c1c1c] transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,121,46,0.25)] hover:-translate-y-1">
+                            <svg class="w-4 h-4 fill-current text-gray-300 group-hover:text-[#ff792e] transition-colors" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                            <span class="text-sm font-medium text-gray-200 group-hover:text-white">Twitter</span>
+                        </a>
+
+                        <!-- YouTube -->
+                        <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" 
+                           class="group relative flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1c1c1c]/70 border border-white/10 hover:border-[#ff792e]/50 hover:bg-[#1c1c1c] transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,121,46,0.25)] hover:-translate-y-1">
+                            <svg class="w-5 h-5 fill-current text-gray-300 group-hover:text-[#ff792e] transition-colors" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                            <span class="text-sm font-medium text-gray-200 group-hover:text-white">YouTube</span>
+                        </a>
+
+                        <!-- LeetCode -->
+                        <a href="https://leetcode.com" target="_blank" rel="noopener noreferrer" 
+                           class="group relative flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1c1c1c]/70 border border-white/10 hover:border-[#ff792e]/50 hover:bg-[#1c1c1c] transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,121,46,0.25)] hover:-translate-y-1">
+                            <svg class="w-5 h-5 fill-current text-gray-300 group-hover:text-[#ff792e] transition-colors" viewBox="0 0 24 24"><path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226a1.374 1.374 0 0 0-.004 1.942l3.879 3.927c.54.54 1.417.54 1.957 0l5.406-5.47a1.374 1.374 0 0 0 0-1.942l-3.879-3.927A1.374 1.374 0 0 0 13.483 0zm-8.87 8.01a1.374 1.374 0 0 0-.97.408l-3.21 3.25a1.374 1.374 0 0 0 0 1.942l8.87 8.98a1.374 1.374 0 0 0 1.94 0l3.21-3.25a1.374 1.374 0 0 0 0-1.942l-8.87-8.98a1.374 1.374 0 0 0-.97-.408z"/></svg>
+                            <span class="text-sm font-medium text-gray-200 group-hover:text-white">LeetCode</span>
+                        </a>
+
+                        <!-- Copy Email Interaction Button -->
+                        <button onclick="copyFooterEmail(this)" 
+                                class="group relative flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#ff792e]/10 border border-[#ff792e]/30 hover:border-[#ff792e] hover:bg-[#ff792e]/20 transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,121,46,0.3)] hover:-translate-y-1 text-[#ff792e]">
+                            <svg class="w-5 h-5 stroke-current fill-none stroke-2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            <span class="footer-email-text text-sm font-medium">Copy Email</span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Copyright & Credit -->
+            <div class="flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-4">
+                <p>Crafted for <span class="text-gray-300 font-medium">Java Core & Data Structures</span> | Sheryians Coding School NYC Series</p>
+                <div class="flex items-center space-x-4">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Active Study Hub
+                    </span>
+                    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="hover:text-[#ff792e] transition-colors flex items-center gap-1">
+                        <span>Back to top</span>
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Email Copy Script -->
+    <script>
+        function copyFooterEmail(btn) {
+            const email = "contact@sheryians.com";
+            const label = btn.querySelector('.footer-email-text');
+            
+            // Clipboard copy with fallbacks
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(email);
+            } else {
+                const el = document.createElement('textarea');
+                el.value = email;
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand('copy');
+                document.body.removeChild(el);
+            }
+
+            // Visual Feedback
+            const originalText = label.innerText;
+            label.innerText = "Email Copied!";
+            btn.classList.add('bg-emerald-500/20', 'border-emerald-500', 'text-emerald-400');
+            btn.classList.remove('text-[#ff792e]', 'bg-[#ff792e]/10', 'border-[#ff792e]/30');
+
+            setTimeout(() => {
+                label.innerText = originalText;
+                btn.classList.remove('bg-emerald-500/20', 'border-emerald-500', 'text-emerald-400');
+                btn.classList.add('text-[#ff792e]', 'bg-[#ff792e]/10', 'border-[#ff792e]/30');
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
